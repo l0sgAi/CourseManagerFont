@@ -18,7 +18,6 @@ import { useUserinfo } from './hooks/useUserinfo'
 export default defineComponent({
   setup() {
     const { userinfo } = useUserinfo()
-
     return { userinfo }
   },
 })

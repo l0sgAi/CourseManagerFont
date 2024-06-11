@@ -7,4 +7,5 @@ export default {
   'rules-username': 'Please input username',
   'rules-password': 'Please input password',
   'rules-regpassword': '6 to 12 characters in length',
+  'rules-validate-code': 'validate code can not be empty',
 }

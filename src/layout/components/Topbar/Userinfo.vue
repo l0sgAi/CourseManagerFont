@@ -68,12 +68,15 @@
     </template>
   </el-dropdown>
 </template>
+
 <script>
-import { defineComponent } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserinfo } from '@/components/Avatar/hooks/useUserinfo'
 import LockModal from './LockModal.vue'
 import { useApp } from '@/pinia/modules/app'
+
+import { defineComponent, getCurrentInstance } from 'vue'
+import { Logout } from '@/api/login'
 
 export default defineComponent({
   components: {
@@ -84,13 +87,19 @@ export default defineComponent({
 
     const { userinfo } = useUserinfo()
 
-    // 退出
-    const logout = () => {
-      // 清除token
-      useApp().clearToken()
-      router.push('/login')
-    }
+    const { proxy: ctx } = getCurrentInstance() // 可以把ctx当成vue2中的this
 
+    // 退出
+    const logout = async () => {
+      const { code, data, message } = await Logout()
+      if (code == 200) {
+        // 清除token
+        useApp().clearToken()
+        router.push('/login')
+      } else {
+        ctx.$message.error(message)
+      }
+    }
     return {
       userinfo,
       logout,
@@ -106,13 +115,16 @@ export default defineComponent({
   cursor: pointer;
   display: flex;
   align-items: center;
+
   &:hover {
     background: #f5f5f5;
   }
+
   .el-icon-user {
     font-size: 20px;
     margin-right: 8px;
   }
+
   .avatar {
     margin-right: 8px;
     width: 32px;

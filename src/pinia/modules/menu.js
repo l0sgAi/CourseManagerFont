@@ -80,10 +80,12 @@ export const useMenus = defineStore('menu', () => {
     // const menus = getFilterMenus(fixedRoutes)
     // commit('SET_MENUS', menus)
 
-    // 方式二：有动态菜单
-    // 从后台获取菜单
-    const { code, data } = await GetMenus()
+    // const menus = getFilterMenus(fixedRoutes)
+    // setMenus(menus)
 
+    //方式二：有动态菜单
+    //从后台获取菜单
+    const { code, data } = await GetMenus()
     if (+code === 200) {
       // 添加路由之前先删除所有动态路由
       asyncRoutes.forEach(item => {
@@ -98,6 +100,7 @@ export const useMenus = defineStore('menu', () => {
       setMenus(menus)
     }
   }
+
   return {
     menus,
     setMenus,
