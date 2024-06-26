@@ -29,9 +29,23 @@ export const GetValidateCode = () => {
 }
 
 // 获取登录用户信息
-export const GetUserinfo = () => {
+export const GetStudentinfo = () => {
   return request({
-    url: '/admin/system/index/getUserInfo',
+    url: '/admin/system/index/getStudentInfo',
+    method: 'get',
+  })
+}
+
+export const GetTeacherinfo = () => {
+  return request({
+    url: '/admin/system/index/getTeacherInfo',
+    method: 'get',
+  })
+}
+
+export const GetAdmininfo = () => {
+  return request({
+    url: '/admin/system/index/getAdminInfo',
     method: 'get',
   })
 }

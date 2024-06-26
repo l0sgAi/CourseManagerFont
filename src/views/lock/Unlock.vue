@@ -116,7 +116,7 @@ export default defineComponent({
     const { clearToken, setScreenCode } = appStore
     const accountStore = useAccount()
     const { userinfo } = storeToRefs(accountStore)
-    const { getUserinfo } = accountStore
+    const { getAdmininfo, getStudentinfo, getTeacherinfo } = accountStore
 
     const checkPwd = async (rule, value, callback) => {
       const cipher = authorization.value && authorization.value.screenCode
@@ -157,8 +157,22 @@ export default defineComponent({
       if (authorization.value) {
         showModal.value = true
         // 尝试获取用户信息
+        const loginType = authorization.value.loginType
+        console.log('\n***loginTyp_authorization***\n', loginType)
         if (!userinfo.value) {
-          getUserinfo()
+          switch (loginType) {
+            case 1:
+              getAdmininfo()
+              break
+            case 2:
+              getStudentinfo()
+              break
+            case 3:
+              getTeacherinfo()
+              break
+            default:
+              break
+          }
         }
       } else {
         ctx.$message(ctx.$t('topbar.lock-error'))
@@ -213,6 +227,7 @@ export default defineComponent({
   margin: 0;
   display: flex;
   align-items: flex-end;
+
   .unlock-btn {
     color: #aaa;
     font-size: 16px;
@@ -221,6 +236,7 @@ export default defineComponent({
     cursor: pointer;
   }
 }
+
 .unlock-modal {
   position: fixed;
   z-index: 10;
@@ -243,13 +259,16 @@ export default defineComponent({
   .btn-unlock {
     background: $mainColor !important;
     color: #fff !important;
+
     ::v-deep(i) {
       transform: scale(1.5);
     }
   }
 }
+
 .userinfo-unlock {
   margin-bottom: 16px;
+
   ::v-deep(h3) {
     color: #fff;
   }

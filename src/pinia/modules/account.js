@@ -10,7 +10,11 @@
  * @Donate: https://huzhushan.gitee.io/vue3-element-admin/donate/
  */
 import { defineStore } from 'pinia'
-import { GetUserinfo } from '@/api/login'
+import { GetAdmininfo } from '@/api/login'
+import { GetStudentinfo } from '@/api/login'
+import { GetTeacherinfo } from '@/api/login'
+
+const loginType = localStorage.getItem('loginType')
 
 export const useAccount = defineStore('account', {
   state: () => ({
@@ -22,9 +26,28 @@ export const useAccount = defineStore('account', {
     clearUserinfo() {
       this.userinfo = null
     },
-    // 获取用户信息
-    async getUserinfo() {
-      const { code, data } = await GetUserinfo()
+    // 获取管理员信息
+
+    async getAdmininfo() {
+      const { code, data } = await GetAdmininfo()
+      if (+code === 200) {
+        this.userinfo = data
+        return Promise.resolve(data)
+      }
+    },
+
+    // 获取学生信息
+    async getStudentinfo() {
+      const { code, data } = await GetStudentinfo()
+      if (+code === 200) {
+        this.userinfo = data
+        return Promise.resolve(data)
+      }
+    },
+
+    // 获取教师信息
+    async getTeacherinfo() {
+      const { code, data } = await GetTeacherinfo()
       if (+code === 200) {
         this.userinfo = data
         return Promise.resolve(data)

@@ -41,7 +41,6 @@ import { nextTick } from 'vue'
 import { useApp } from './pinia/modules/app'
 import { useAccount } from './pinia/modules/account'
 import { useMenus } from './pinia/modules/menu'
-
 const getPageTitle = title => {
   const { title: appTitle } = useApp()
   if (title) {
@@ -75,15 +74,41 @@ router.beforeEach(async to => {
       replace: true,
     }
   } else {
-    const { userinfo, getUserinfo } = useAccount()
+    const {
+      userinfo,
+      getStudentinfo,
+      getTeacherinfo,
+      getAdmininfo,
+    } = useAccount()
     // 获取用户角色信息，根据角色判断权限
     if (!userinfo) {
-      try {
-        // 获取用户信息
-        await getUserinfo()
-      } catch (err) {
-        loadingInstance.close()
-        return false
+      if (localStorage.getItem('loginType') == 0) {
+        //管理员
+        try {
+          // 获取用户信息
+          await getAdmininfo()
+        } catch (err) {
+          loadingInstance.close()
+          return false
+        }
+      } else if (localStorage.getItem('loginType') == 1) {
+        //学生
+        try {
+          // 获取用户信息
+          await getStudentinfo()
+        } catch (err) {
+          loadingInstance.close()
+          return false
+        }
+      } else if (localStorage.getItem('loginType') == 2) {
+        //老师
+        try {
+          // 获取用户信息
+          await getTeacherinfo()
+        } catch (err) {
+          loadingInstance.close()
+          return false
+        }
       }
 
       return to.fullPath

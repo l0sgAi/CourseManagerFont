@@ -2,7 +2,7 @@
 <template>
   <div class="login">
     <el-form class="form" :model="model" :rules="rules" ref="loginForm">
-      <h1 class="title">尚品甄选后台管理系统</h1>
+      <h1 class="title">选课信息管理系统</h1>
 
       <el-form-item prop="userName">
         <el-input
@@ -25,7 +25,7 @@
         />
       </el-form-item>
 
-      <!-- 新增的验证码页面 -->
+      <!--新增的验证码页面 -->
       <el-form-item prop="captcha">
         <div class="captcha">
           <el-input
@@ -41,6 +41,18 @@
           />
         </div>
       </el-form-item>
+
+      <!--新增的登录角色选择-->
+      <el-form-item label="登录类型">
+        <el-radio-group v-model="model.loginType">
+          <el-radio :label="0">管理员</el-radio>
+          <el-radio :label="1">学生</el-radio>
+          <el-radio :label="2">教师</el-radio>
+        </el-radio-group>
+      </el-form-item>
+
+      <!--登录提示-->
+      <label class="tip">用户名为姓名+id，初始密码均为1q2w3e4r5t</label>
 
       <el-form-item>
         <el-button
@@ -76,6 +88,7 @@ import { useRouter, useRoute } from 'vue-router'
 import ChangeLang from '@/layout/components/Topbar/ChangeLang.vue'
 import useLang from '@/i18n/useLang'
 import { useApp } from '@/pinia/modules/app'
+import { ElMessage } from 'element-plus'
 
 export default defineComponent({
   components: { ChangeLang },
@@ -118,17 +131,19 @@ export default defineComponent({
       ],
     })
 
-    // onMounted钩子函数，加载页面时刷新验证码
+    // onMounted钩子函数，加载页面时刷新验证码,刷新localStorage
     onMounted(() => {
       state.refreshCaptcha()
+      localStorage.setItem('loginType', state.model.loginType)
     })
 
     const state = reactive({
       model: {
-        userName: 'admin',
-        password: '111111',
+        userName: '',
+        password: '',
         captcha: '', // 用户输入的验证码
         codeKey: '', // 后端返回的验证码key
+        loginType: 1,
       },
       rules: getRules(),
       loading: false,
@@ -143,44 +158,74 @@ export default defineComponent({
       ),
       loginForm: ref(null),
       submit: () => {
+        sessionStorage.setItem('flag', true) //登陆后刷新缓存
+        localStorage.setItem('uid', extractId(state.model.userName))
+        localStorage.setItem('loginType', state.model.loginType)
+        if (state.model.loginType == null) {
+          ElMessage.error('请选择登录类型！')
+        }
         if (state.loading) {
           return
         }
         state.loginForm.validate(async valid => {
           if (valid) {
             state.loading = true
-            const { code, data, message } = await Login(state.model)
-            if (+code === 200) {
-              ctx.$message.success({
-                message: ctx.$t('login.loginsuccess'),
-                duration: 1000,
-              })
+            try {
+              console.log(state.model)
+              const { code, data, message } = await Login(state.model)
+              if (+code === 200) {
+                // 登录成功，存储 loginType
+                ctx.$message.success({
+                  message: ctx.$t('login.loginsuccess'),
+                  duration: 1000,
+                })
 
-              const targetPath = decodeURIComponent(route.query.redirect)
-              if (targetPath.startsWith('http')) {
-                // 如果是一个url地址
-                window.location.href = targetPath
-              } else if (targetPath.startsWith('/')) {
-                // 如果是内部路由地址
-                router.push(targetPath)
-              } else {
-                router.push('/') // 请求成功以后，进入到首页
+                const targetPath = decodeURIComponent(route.query.redirect)
+                if (targetPath.startsWith('http')) {
+                  // 如果是一个url地址
+                  window.location.href = targetPath
+                } else if (targetPath.startsWith('/')) {
+                  // 如果是内部路由地址
+                  router.push(targetPath)
+                } else {
+                  router.push('/') // 请求成功以后，进入到首页
+                }
+                useApp().initToken(data)
               }
-              useApp().initToken(data)
-            } else {
-              ctx.$message.error(message)
+              state.loading = false
+            } catch {
+              ElMessage.error('登录失败！请刷新验证码或检查您的输入。')
+              state.loading = false
             }
-            state.loading = false
           }
         })
       },
     })
+
+    // 监视loginType的变化
+    watch(
+      () => state.model.loginType,
+      (newVal, oldVal) => {
+        console.log('loginType变化', newVal)
+        // 存储到localStorage
+        localStorage.setItem('loginType', newVal)
+      },
+      {
+        immediate: true, // 确保在初始时也执行一次
+      }
+    )
 
     return {
       ...toRefs(state),
     }
   },
 })
+
+function extractId(str) {
+  // 使用正则表达式匹配第一个数字及其后面的所有字符，以提取用户id
+  const match = str.match(/\d.*/)
+  return match ? match[0] : null // 如果匹配到，则返回匹配的字符串，否则返回null
+}
 </script>
 
 <style lang="scss" scoped>
@@ -219,17 +264,17 @@ export default defineComponent({
     .title {
       color: #fff;
       text-align: center;
-      font-size: 24px;
-      margin: 0 0 24px;
+      font-size: 36px;
+      margin: 0 0 36px;
     }
 
     .text {
-      font-size: 16px;
+      font-size: 24px;
 
       :deep(.el-input__inner) {
         color: #fff;
-        height: 48px;
-        line-height: 48px;
+        height: 72px;
+        line-height: 72px;
 
         &::placeholder {
           color: rgba(255, 255, 255, 0.2);
@@ -252,12 +297,21 @@ export default defineComponent({
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
 }
 
 .captcha img {
   cursor: pointer;
-  margin-left: 20px;
+  margin-left: 30px;
+}
+
+.tip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  color: red;
+  font-size: 20px;
 }
 
 .change-lang {

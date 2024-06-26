@@ -1,8 +1,19 @@
 // 导入组件
 const Layout = () => import('@/layout/index.vue')
-const sysRole = () => import('@/views/system/sysRole.vue')
-const sysUser = () => import('@/views/system/sysUser.vue')
-const sysMenu = () => import('@/views/system/sysMenu.vue')
+const Course = () => import('@/views/system/Course.vue')
+const Student = () => import('@/views/system/Student.vue')
+const Teacher = () => import('@/views/system/Teacher.vue')
+const Statistics = () => import('@/views/system/Statistics.vue')
+const StudentCourse = () => import('@/views/system/StudentCourse.vue')
+const StudentCourseList = () => import('@/views/system/StudentCourseList.vue')
+const TeacherGrade = () => import('@/views/system/TeacherGrade.vue')
+const TeacherCourse = () => import('@/views/system/TeacherCourse.vue')
+const StatisticsStudent = () => import('@/views/system/StatisticsStudent.vue')
+
+//判断菜单隐藏
+const ishiddenStu = localStorage.getItem('loginType') == '1' ? false : true
+const ishiddenTea = localStorage.getItem('loginType') == '2' ? false : true
+const ishiddenAd = localStorage.getItem('loginType') == '0' ? false : true
 
 // 导出该组件
 export default [
@@ -11,36 +22,90 @@ export default [
     component: Layout,
     name: 'system',
     meta: {
-      title: '系统管理',
+      title: '系统主页',
     },
     icon: 'Location',
     children: [
       {
-        path: '/sysRole',
-        name: 'sysRole',
-        component: sysRole,
+        path: '/course',
+        name: 'course',
+        component: Course,
         meta: {
-          title: '角色管理',
+          title: '课程管理',
         },
-        hidden: false,
+        hidden: ishiddenAd,
       },
       {
-        path: '/sysUser',
-        name: 'sysUser',
-        component: sysUser,
+        path: '/student',
+        name: 'student',
+        component: Student,
         meta: {
-          title: '用户管理',
+          title: '学生管理',
         },
-        hidden: false,
+        hidden: ishiddenAd,
       },
       {
-        path: '/menu',
-        name: 'sysMenu',
-        component: sysMenu,
+        path: '/teacher',
+        name: 'teacher',
+        component: Teacher,
         meta: {
-          title: '菜单管理',
+          title: '教师管理',
         },
-        hidden: false,
+        hidden: ishiddenAd,
+      },
+      {
+        path: '/statistics',
+        name: 'statistics',
+        component: Statistics,
+        meta: {
+          title: '课程数据统计',
+        },
+        hidden: ishiddenAd,
+      },
+      {
+        path: '/statisticsStudent',
+        name: 'statisticsStudent',
+        component: StatisticsStudent,
+        meta: {
+          title: '学生数据统计',
+        },
+        hidden: ishiddenAd,
+      },
+      {
+        path: '/studentCourse',
+        name: 'studentCourse',
+        component: StudentCourse,
+        meta: {
+          title: '学生选课',
+        },
+        hidden: ishiddenStu,
+      },
+      {
+        path: '/studentCourseList',
+        name: 'studentCourseList',
+        component: StudentCourseList,
+        meta: {
+          title: '课程列表',
+        },
+        hidden: ishiddenStu,
+      },
+      {
+        path: '/teacherCourse',
+        name: 'teacherCourse',
+        component: TeacherCourse,
+        meta: {
+          title: '教师课程管理',
+        },
+        hidden: ishiddenTea,
+      },
+      {
+        path: '/teacherGrade',
+        name: 'teacherGrade',
+        component: TeacherGrade,
+        meta: {
+          title: '学生课程成绩评分',
+        },
+        hidden: ishiddenTea,
       },
     ],
   },
