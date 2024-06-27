@@ -1,3 +1,4 @@
+通过修改框架 Vue3 Element Admin ；编写的选课信息系统前端
 <div align="center"> <a href="https://github.com/huzhushan/vue3-element-admin"> <img alt="VEA Logo" width="160" src="https://huzhushan.gitee.io/vue3-element-admin-site/assets/logo.1d6978fb.svg"> </a> <br> <br>
 
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](LICENSE)
