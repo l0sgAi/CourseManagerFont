@@ -41,6 +41,50 @@
       </el-row>
     </el-form>
 
+    <!-- 分配菜单的对话框 
+        // tree组件添加ref属性，后期方便进行tree组件对象的获取-->
+    <el-dialog v-model="dialogMenuVisibleMenu" title="课程打分" width="90%">
+      <el-form label-width="80px">
+        <h1 class="report">学生列表</h1>
+        <el-table
+          :data="courseStudentList"
+          style="width: 100%"
+          stripe="true"
+          max-height="500"
+        >
+          <el-table-column prop="id" label="学号" />
+          <el-table-column prop="name" label="姓名" />
+          <el-table-column prop="sex" label="性别" #default="scope" width="100">
+            {{ scope.row.sex == 1 ? '男' : '女' }}
+          </el-table-column>
+          <el-table-column prop="college" label="学院" />
+          <el-table-column prop="major" label="专业" />
+          <el-table-column prop="studentClass" label="班级" />
+          <el-table-column
+            label="得分"
+            align="center"
+            width="280"
+            #default="scope"
+          >
+            <el-form-item label="分数">
+              <el-input-number
+                v-model="scope.row.grade"
+                :precision="1"
+                :step="1"
+                :min="0"
+                :max="100"
+              />
+            </el-form-item>
+          </el-table-column>
+        </el-table>
+        <br />
+        <el-form-item>
+          <el-button type="primary" @click="doAssign">提交</el-button>
+          <el-button @click="dialogMenuVisibleMenu = false">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
+
     <!--- 课程通知表格数据 -->
     <h1 class="report">课程列表</h1>
     <el-table :data="list" style="width: 100%" stripe="true" max-height="500">
@@ -53,7 +97,7 @@
       <el-table-column prop="numLimit" label="人数限制" width="100" />
       <el-table-column prop="num" label="选课人数" width="100" />
       <el-table-column label="操作" align="center" width="280" #default="scope">
-        <el-button type="primary" size="small" @click="mark(scope.row)">
+        <el-button type="primary" size="small" @click="showMarkMenu(scope.row)">
           评分
         </el-button>
       </el-table-column>
@@ -75,11 +119,47 @@
 <!-- script部分修改内容 -->
 <script setup>
 import { ref, onMounted, warn } from 'vue'
-import { GetTeacherCourseListByPage } from '@/api/teacherCourse'
+import {
+  GetTeacherCourseListByPage,
+  GetCourseStudentList,
+  DoAssignGradeToStudent,
+} from '@/api/teacherCourse'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { UpdateCourseData } from '@/api/course'
-import { GetAdmininfo, GetStudentinfo, GetTeacherinfo } from '@/api/login'
 import { useUserinfo } from '@/components/Avatar/hooks/useUserinfo'
+//////////////////////课程打分
+let courseStudentList = ref([]) //课程学生列表
+
+const dialogMenuVisibleMenu = ref(false)
+
+const courseId = ref()
+
+const showMarkMenu = async row => {
+  courseId.value = row.id //获取课程id
+  dialogMenuVisibleMenu.value = true
+  const { data: courseStudents } = await GetCourseStudentList(row.id) // 获取课程学生列表
+  courseStudentList.value = courseStudents
+}
+
+const doAssign = async () => {
+  // 使用map方法提取学生id和grade
+  // let studentGrade = courseStudentList.value.map(item => item.id, item => item.grade)
+  let idsAndGrades = courseStudentList.value.map(student => ({
+    id: student.id,
+    grade: student.grade,
+  }))
+
+  // 构建请求数据
+  const assignGradeDto = {
+    courseId: courseId.value,
+    studentGradeList: idsAndGrades,
+  }
+
+  // 发送请求
+  await DoAssignGradeToStudent(assignGradeDto)
+  ElMessage.success('操作成功')
+  dialogMenuVisibleMenu.value = false
+}
+
 //////////////////////课程通知记录列表
 let list = ref([]) //结果列表
 

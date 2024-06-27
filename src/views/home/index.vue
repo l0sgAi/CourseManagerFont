@@ -328,7 +328,6 @@ const createTimes = ref([]) //开始时间
 onMounted(() => {
   if (sessionStorage.getItem('flag')) {
     sessionStorage.removeItem('flag')
-    console.log('\n***刷新缓存***\n')
     location.reload()
   }
   fetchData()

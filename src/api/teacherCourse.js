@@ -12,3 +12,19 @@ export const GetTeacherCourseListByPage = (current, limit, id, queryDto) => {
     data: queryDto, //其它参数
   })
 }
+
+//查询课程对应的选课学生数据
+export const GetCourseStudentList = courseId => {
+  return request({
+    url: `${base_api}/findCourseStudent/${courseId}`, //路径
+    method: 'get', //请求方式
+  })
+}
+//保存学生重新分配的分数数据
+export const DoAssignGradeToStudent = assignGradeDto => {
+  return request({
+    url: `${base_api}/doAssign`, //路径
+    method: 'post', //请求方式
+    data: assignGradeDto,
+  })
+}

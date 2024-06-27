@@ -263,7 +263,6 @@ const showAssignMenu = async row => {
 const assignCourse = async row => {
   //添加数据至teacherCourseList
   teacherCourseList.value.push(row)
-  console.log('***添加teacherCourseList数据***\n', teacherCourseList.value)
 }
 
 const cancelAssign = async row => {
@@ -271,7 +270,6 @@ const cancelAssign = async row => {
   teacherCourseList.value = teacherCourseList.value.filter(
     item => item.id != row.id
   )
-  console.log('***移除teacherCourseList数据***\n', teacherCourseList.value)
 }
 
 const doAssign = async () => {
@@ -283,8 +281,6 @@ const doAssign = async () => {
     teacherId: teacherId,
     courseIdList: menuIds,
   }
-
-  console.log('***分配的数据***\n', assignCourseDto)
 
   // 发送请求
   await DoAssignCourseToTeacher(assignCourseDto)

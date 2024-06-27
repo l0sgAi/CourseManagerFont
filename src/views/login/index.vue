@@ -206,7 +206,6 @@ export default defineComponent({
     watch(
       () => state.model.loginType,
       (newVal, oldVal) => {
-        console.log('loginType变化', newVal)
         // 存储到localStorage
         localStorage.setItem('loginType', newVal)
       },

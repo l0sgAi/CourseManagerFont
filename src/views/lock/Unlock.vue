@@ -158,7 +158,6 @@ export default defineComponent({
         showModal.value = true
         // 尝试获取用户信息
         const loginType = authorization.value.loginType
-        console.log('\n***loginTyp_authorization***\n', loginType)
         if (!userinfo.value) {
           switch (loginType) {
             case 1:
