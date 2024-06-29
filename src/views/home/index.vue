@@ -288,7 +288,7 @@ const submitTea = async () => {
     if (code === 200) {
       //提交成功状态码
       //关闭弹窗
-      dialogVisible.value = false
+      dialogVisibleTea.value = false
       //提示信息
       ElMessage.success('修改操作成功!')
       //刷新页面
